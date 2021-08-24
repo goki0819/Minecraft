@@ -1,0 +1,7 @@
+java.util.zip.ZipException: Not in GZIP format
+	at java.util.zip.GZIPInputStream.readHeader(GZIPInputStream.java:165)
+	at java.util.zip.GZIPInputStream.<init>(GZIPInputStream.java:79)
+	at java.util.zip.GZIPInputStream.<init>(GZIPInputStream.java:91)
+	at util.nbt.NBTTokenizer.<init>(NBTTokenizer.java:29)
+	at test.Test.test1(Test.java:25)
+	at test.Test.main(Test.java:13)
