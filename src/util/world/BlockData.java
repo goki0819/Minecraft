@@ -16,9 +16,13 @@ public class BlockData {
 		this.properties=Node.getElements(NBTElement.sort(palette, "10[Properties]/8")).stream().collect(Collectors.toMap(p->p.getName(), p->p.getValue().toString()));
 	}
 	
+	public String getID() {return id;}
+	public Map<String, String> getProperties(){return properties;}
 	public String toString() {return id+""+properties;}
 	
 	public static BlockData[] getBlocks(List<Node<NBTElement>> palettes) {
+		if(palettes.size()==0)return null;
+		
 		BlockData[] bs=new BlockData[palettes.size()];
 		for(int i=0;i<bs.length;i++) {
 			bs[i]=new BlockData(palettes.get(i));

@@ -2,6 +2,8 @@ package util.world;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -32,15 +34,23 @@ public class ChunkData implements Comparable<ChunkData>{
 	}
 	
 	public int getTimeStamp() {return timeStamp;}
-	public int getX() {return x;}
-	public int getZ() {return z;}
+	public int getSectionX() {return x;}
+	public int getSectionZ() {return z;}
+	/**
+	 * @param x (0~15)
+	 * @param y (0~255)
+	 * @param z (0~15)
+	 * @return
+	 */
+	public Block getBlock(int x, int y, int z) {
+		return sections[y/16].getBlock(x, y%16, z);
+	}
+	public SectionData[] getSections() {return sections;}
 	public Node<NBTElement> getNBTInfo(){return root;}
-	
 	@Override
 	public int compareTo(ChunkData data) {
 		return this.sectorIndex>data.sectorIndex ? 1:-1;
 	}
-	
 	private void readChunkFormat(InputStream in) throws IOException {
 		byte[] len_bin=new byte[4];
 		byte[] data=new byte[4096*sectorCount-5];
@@ -69,13 +79,12 @@ public class ChunkData implements Comparable<ChunkData>{
 		this.sections=SectionData.getSections(root);
 	}
 	
-	public static List<ChunkData> getChunks(InputStream in) throws IOException{
+	public static ChunkData[] getChunks(File file) throws IOException {return getChunks(new FileInputStream(file));}
+	public static ChunkData[] getChunks(InputStream in) throws IOException{
 		byte[] offsets=new byte[4096];
 		byte[] timeStamp=new byte[4096];
-		
-		List<ChunkData> cs=new ArrayList<>();
-		
 		int currentSectorIndex=2;
+		List<ChunkData> cs=new ArrayList<>();
 		
 		in.read(offsets);
 		in.read(timeStamp);
@@ -97,6 +106,12 @@ public class ChunkData implements Comparable<ChunkData>{
 			d.readChunkFormat(in);
 		}
 		
-		return cs;
+		ChunkData[] out=new ChunkData[1024];
+		
+		for(ChunkData cd:cs) {
+			out[cd.getSectionZ()*32+cd.getSectionX()]=cd;
+		}
+		
+		return out;
 	}
 }
