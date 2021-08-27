@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
-public class IntArray implements NBTReadableValue<byte[]>{
+public class LongArray implements NBTReadableValue<byte[]>{
 	
 	private byte[] value;
 	
@@ -12,17 +12,15 @@ public class IntArray implements NBTReadableValue<byte[]>{
 	public void read(InputStream inputStream) throws IOException {
 		byte[] len=new byte[4];
 		inputStream.read(len);
-		
-		value=new byte[ByteBuffer.wrap(len).getInt()*4];
+		value=new byte[ByteBuffer.wrap(len).getInt() * 8];
 		inputStream.read(value);
 	}
 	
 	public byte[] getValue() {return value;}
-	public int[] getIntValue() {
-		int[] l=new int[value.length/8];
-		for(int i=0;i<l.length;i++) l[i]=ByteBuffer.wrap(value, i*4, 4).getInt();
+	public long[] getLongValue() {
+		long[] l=new long[value.length/8];
+		for(int i=0;i<l.length;i++) l[i]=ByteBuffer.wrap(value, i*8, 8).getLong();
 		return l;
 	}
-
-	public String toString() {return "IntArray["+value.length/4+"]";}
+	public String toString() {return "LongArray["+value.length/8+"]";}
 }

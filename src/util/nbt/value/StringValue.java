@@ -5,9 +5,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
-import util.nbt.NBTValue;
-
-public class StringValue implements NBTValue{
+public class StringValue implements NBTReadableValue<String>{
 
 	private String value;
 	
@@ -20,5 +18,6 @@ public class StringValue implements NBTValue{
 		value=new String(str, StandardCharsets.UTF_8);
 	}
 	
+	public String getValue() {return value;}
 	public String toString() {return value;}
 }

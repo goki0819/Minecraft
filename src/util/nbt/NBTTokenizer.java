@@ -39,6 +39,9 @@ public class NBTTokenizer{
 			throw new IOException("file is not found.");
 		}
 	}
+	public NBTTokenizer(InputStream inputStream) throws IOException {
+		this.inputStream=inputStream;
+	}
 
 	public NBTElement getNextElement() throws IOException {
 		if(inputStream.available()==0)return null;
@@ -54,7 +57,7 @@ public class NBTTokenizer{
 		NBTElement element=null;
 		List<Node<NBTElement>> children=new ArrayList<>();
 		
-		for(int i=0;i<listValue.getCount();i++) {
+		for(int i=0;i<listValue.getValue();i++) {
 			element=getNextElement(listValue);
 			node=new Node<NBTElement>(element);
 			if(element.getID()==NBTElement.TAG_Compound){
@@ -101,9 +104,12 @@ public class NBTTokenizer{
 			}else if(element.getID()==NBTElement.TAG_List){
 				ListValue lv=(ListValue)element.getValue();
 				node.addChild(getListChildren(lv));
+			}else if(element.getID()==NBTElement.TAG_End) {
+				return root;
 			}
 			root.addChild(node);
 		}
+		
 		return root;
 	}
 

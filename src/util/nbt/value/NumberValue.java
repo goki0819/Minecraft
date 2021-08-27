@@ -3,12 +3,13 @@ package util.nbt.value;
 import java.io.InputStream;
 import java.math.BigDecimal;
 
-import util.nbt.NBTValue;
-
-public class NumberValue implements NBTValue{
+public class NumberValue implements NBTReadableValue<Number>{
 	
-	private BigDecimal value;
+	private Number value;
 	
+	public NumberValue(int value) {
+		this.value=new BigDecimal(value);
+	}
 	public NumberValue(long value) {
 		this.value=new BigDecimal(value);
 	}
@@ -16,8 +17,9 @@ public class NumberValue implements NBTValue{
 		this.value=new BigDecimal(value);
 	}
 	
-	@Override
+	@Override @Deprecated
 	public void read(InputStream inputStream) {}
 	
+	public Number getValue() {return value;}
 	public String toString() {return value.toString();}
 }

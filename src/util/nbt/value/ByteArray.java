@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
-import util.nbt.NBTValue;
-
-public class ByteArray implements NBTValue{
+public class ByteArray implements NBTReadableValue<byte[]>{
 	
 	private byte[] value;
 	
@@ -19,4 +17,6 @@ public class ByteArray implements NBTValue{
 	}
 	
 	public byte[] getValue() {return value;}
+
+	public String toString() {return "ByteArray["+value.length+"]";}
 }

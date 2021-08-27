@@ -2,6 +2,7 @@ package util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Node<T extends Element>{
 	private List<Node<T>> children=new ArrayList<Node<T>>();
@@ -49,4 +50,8 @@ public class Node<T extends Element>{
 	
 	public T getElement(){return this.element;}
 	public void setElement(T element){this.element=element;}
+	
+	public static <T extends Element> List<T> getElements(List<Node<T>> nodes){
+		return nodes.stream().map((e)->{return e.getElement();}).collect(Collectors.toList());
+	};
 }

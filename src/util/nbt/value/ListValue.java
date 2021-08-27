@@ -4,29 +4,30 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
-import util.nbt.NBTValue;
-
-public class ListValue implements NBTValue{
+public class ListValue implements NBTReadableValue<Integer>{
 	
-	private int id, count;
+	private int id, size;
 	
 	@Override
 	public void read(InputStream inputStream) throws IOException {
 		id=inputStream.read();
 		byte[] c=new byte[4];
 		inputStream.read(c);
-		count=ByteBuffer.wrap(c).getInt();
+		size=ByteBuffer.wrap(c).getInt();
 	}
 
 	public int getId() {
 		return id;
 	}
-
-	public int getCount() {
-		return count;
+	
+	/**
+	 * @return size of list
+	 */
+	public Integer getValue() {
+		return size;
 	}
 
 	public String toString() {
-		return "[ID:"+id+", Count:"+count+"]";
+		return "[ID:"+id+", Size:"+size+"]";
 	}
 }
