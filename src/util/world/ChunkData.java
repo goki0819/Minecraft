@@ -43,7 +43,7 @@ public class ChunkData implements Comparable<ChunkData>{
 	 * @return
 	 */
 	public Block getBlock(int x, int y, int z) {
-		return sections[y/16].getBlock(x, y%16, z);
+		return sections[y/16]!=null ? sections[y/16].getBlock(x, y%16, z) : Block.AIR;
 	}
 	public SectionData[] getSections() {return sections;}
 	public Node<NBTElement> getNBTInfo(){return root;}

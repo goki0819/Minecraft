@@ -3,6 +3,7 @@ package util.world;
 import java.util.Map;
 
 public class Block{
+	public static Block AIR=new Block(BlockData.AIR, (byte)0, (byte)0);
 	
 	private BlockData data;
 	private byte blockLight, skyLight;

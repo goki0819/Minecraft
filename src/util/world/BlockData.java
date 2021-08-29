@@ -8,9 +8,12 @@ import util.Node;
 import util.nbt.NBTElement;
 
 public class BlockData {
+	public static BlockData AIR=air();
+	
 	private String id;
 	private Map<String, String> properties;
 	
+	private BlockData() {}
 	private BlockData(Node<NBTElement> palette) {
 		this.id=NBTElement.sort(palette, "8[Name]").get(0).getElement().getValue().toString();
 		this.properties=Node.getElements(NBTElement.sort(palette, "10[Properties]/8")).stream().collect(Collectors.toMap(p->p.getName(), p->p.getValue().toString()));
@@ -28,5 +31,10 @@ public class BlockData {
 			bs[i]=new BlockData(palettes.get(i));
 		}
 		return bs;
+	}
+	private static BlockData air() {
+		BlockData bd=new BlockData();
+		bd.id="minecraft:air";
+		return bd;
 	}
 }

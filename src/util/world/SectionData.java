@@ -12,7 +12,7 @@ public class SectionData {
 	
 	private int y=0;
 	private BlockData[] blocks;
-	private int[] blockStates=new int[4096];
+	private byte[] blockStates=new byte[4096];
 	private byte[] blockLight=null, skyLight=null;
 	
 	private SectionData(Node<NBTElement> sectionNode) {
@@ -54,7 +54,7 @@ public class SectionData {
 		byte bl = blockLight==null ? 0 : Nibble4(blockLight, blockPos);
 		byte sl = skyLight==null ? 0 : Nibble4(skyLight, blockPos);
 		
-		if(blocks==null)return null;
+		if(blocks==null)return Block.AIR;
 		return new Block(blocks[blockStates[blockPos]], bl, sl);
 	}
 	
@@ -67,21 +67,41 @@ public class SectionData {
 			for(int i=0;i<bs_long.length;i++) {
 				byte[] b=new byte[8];
 				System.arraycopy(bs_bin, i*8, b, 0, 8);
-				int[] ids=new int[10];
+				byte[] ids=new byte[10];
 				
-				ids[0]=(b[0]<<2 & 0x3C) | (b[1] >> 6 & 0x3);
-				ids[1]=(b[1] & 0x3F);
-				ids[2]=(b[2]>>2 & 0x3F);
-				ids[3]=(b[2]<<4 & 0x30) | (b[3] >> 4 & 0xF);
-				ids[4]=(b[3]<<2 & 0x3C) | (b[4] >> 6 & 0x3);
-				ids[5]=(b[4] & 0x3F);
-				ids[6]=(b[5]>>2 & 0x3F);
-				ids[7]=(b[5]<<4 & 0x30) | (b[6] >> 4 & 0xF);
-				ids[8]=(b[6]<<2 & 0x3C) | (b[7] >> 6 & 0x3);
-				ids[9]=(b[7] & 0x3F);
+				ids[0]=(byte) ((b[0]<<2 & 0x3C) | (b[1] >> 6 & 0x3));
+				ids[1]=(byte) (b[1] & 0x3F);
+				ids[2]=(byte) (b[2]>>2 & 0x3F);
+				ids[3]=(byte) ((b[2]<<4 & 0x30) | (b[3] >> 4 & 0xF));
+				ids[4]=(byte) ((b[3]<<2 & 0x3C) | (b[4] >> 6 & 0x3));
+				ids[5]=(byte) (b[4] & 0x3F);
+				ids[6]=(byte) (b[5]>>2 & 0x3F);
+				ids[7]=(byte) ((b[5]<<4 & 0x30) | (b[6] >> 4 & 0xF));
+				ids[8]=(byte) ((b[6]<<2 & 0x3C) | (b[7] >> 6 & 0x3));
+				ids[9]=(byte) (b[7] & 0x3F);
 				
 				for(int j=ids.length-1; j>=0 && index<this.blockStates.length; j--) {
 					this.blockStates[index++]=ids[j];
+				}
+			}
+		}else if(bs_long.length==384) {//6bit
+			for(int i=0;i<this.blockStates.length;i++) {
+				int bit=i*6;
+				int longIndex=bit/64;
+				int longBit=bit%64;
+				int byteIndex=longBit/8;
+				int bitIndex=longBit%8;
+				int realByteIndex=longIndex*8+7-byteIndex;
+				byte bs1=(byte) (bs_bin[realByteIndex]>>bitIndex);
+				
+				if(bitIndex<=2)this.blockStates[i] = (byte) (bs1&0x3F);
+				else {
+					byte bs2 = (byte) ((realByteIndex%8==0 ? bs_bin[realByteIndex+15] : bs_bin[realByteIndex-1])<<(8-bitIndex));
+					if(bitIndex==3)this.blockStates[i]=(byte) ((bs1 & 0x1F) | (bs2 & 0x20));
+					else if(bitIndex==4)this.blockStates[i]=(byte) ((bs1 & 0xF) | (bs2 & 0x30));
+					else if(bitIndex==5)this.blockStates[i]=(byte) ((bs1 & 0x7) | (bs2 & 0x38));
+					else if(bitIndex==6)this.blockStates[i]=(byte) ((bs1 & 0x3) | (bs2 & 0x3C));
+					else if(bitIndex==7)this.blockStates[i]=(byte) ((bs1 & 0x1) | (bs2 & 0x3E));
 				}
 			}
 		}else if(bs_long.length==342) {
@@ -89,20 +109,20 @@ public class SectionData {
 			for(int i=0;i<bs_long.length;i++) {
 				byte[] b=new byte[8];
 				System.arraycopy(bs_bin, i*8, b, 0, 8);
-				int[] ids=new int[12];
+				byte[] ids=new byte[12];
 				
-				ids[0]=(b[0]<<1 & 0x1E) | (b[1] >> 7 & 0x1);
-				ids[1]=(b[1]>>2&0x1F);
-				ids[2]=(b[1]<<3 & 0x18) | (b[2] >> 5 & 0x7);
-				ids[3]=(b[2] & 0x1F);
-				ids[4]=(b[3]>>3 & 0x1F);
-				ids[5]=(b[3]<<2 & 0x1C) | (b[4] >> 6 & 0x3);
-				ids[6]=(b[4]>>1 & 0x1F);
-				ids[7]=(b[4]<<4 & 0x10) | (b[5] >> 4 & 0xF);
-				ids[8]=(b[5]<<1 & 0x1E) | (b[6] >> 7 & 0x1);
-				ids[9]=(b[6]>>2 & 0x1F);
-				ids[10]=(b[6]<<3 & 0x18) | (b[7] >> 5 & 0x7);
-				ids[11]=(b[7] & 0x1F);
+				ids[0]=(byte) ((b[0]<<1 & 0x1E) | (b[1] >> 7 & 0x1));
+				ids[1]=(byte) (b[1]>>2&0x1F);
+				ids[2]=(byte) ((b[1]<<3 & 0x18) | (b[2] >> 5 & 0x7));
+				ids[3]=(byte) (b[2] & 0x1F);
+				ids[4]=(byte) (b[3]>>3 & 0x1F);
+				ids[5]=(byte) ((b[3]<<2 & 0x1C) | (b[4] >> 6 & 0x3));
+				ids[6]=(byte) (b[4]>>1 & 0x1F);
+				ids[7]=(byte) ((b[4]<<4 & 0x10) | (b[5] >> 4 & 0xF));
+				ids[8]=(byte) ((b[5]<<1 & 0x1E) | (b[6] >> 7 & 0x1));
+				ids[9]=(byte) (b[6]>>2 & 0x1F);
+				ids[10]=(byte) ((b[6]<<3 & 0x18) | (b[7] >> 5 & 0x7));
+				ids[11]=(byte) (b[7] & 0x1F);
 				
 				for(int j=ids.length-1; j>=0 && index<this.blockStates.length; j--) {
 					this.blockStates[index++]=ids[j];
@@ -116,15 +136,15 @@ public class SectionData {
 				int byteIndex=longBit/8;
 				int bitIndex=longBit%8;
 				int realByteIndex=longIndex*8+7-byteIndex;
-				int bs1=bs_bin[realByteIndex]>>bitIndex;
+				byte bs1=(byte) (bs_bin[realByteIndex]>>bitIndex);
 				
-				if(bitIndex<=3)this.blockStates[i] = bs1&0x1F;
+				if(bitIndex<=3)this.blockStates[i] = (byte) (bs1&0x1F);
 				else {
-					int bs2 = (realByteIndex%8==0 ? bs_bin[realByteIndex+15] : bs_bin[realByteIndex-1])<<(8-bitIndex);
-					if(bitIndex==4)this.blockStates[i]=(bs1 & 0xF) | (bs2 & 0x10);
-					else if(bitIndex==5)this.blockStates[i]=(bs1 & 0x7) | (bs2 & 0x18);
-					else if(bitIndex==6)this.blockStates[i]=(bs1 & 0x3) | (bs2 & 0x1C);
-					else if(bitIndex==7)this.blockStates[i]=(bs1 & 0x1) | (bs2 & 0x1E);
+					byte bs2 = (byte) ((realByteIndex%8==0 ? bs_bin[realByteIndex+15] : bs_bin[realByteIndex-1])<<(8-bitIndex));
+					if(bitIndex==4)this.blockStates[i]=(byte) ((bs1 & 0xF) | (bs2 & 0x10));
+					else if(bitIndex==5)this.blockStates[i]=(byte) ((bs1 & 0x7) | (bs2 & 0x18));
+					else if(bitIndex==6)this.blockStates[i]=(byte) ((bs1 & 0x3) | (bs2 & 0x1C));
+					else if(bitIndex==7)this.blockStates[i]=(byte) ((bs1 & 0x1) | (bs2 & 0x1E));
 				}
 			}
 		}else if(bs_long.length==256) {
@@ -132,10 +152,10 @@ public class SectionData {
 			for(int i=0;i<bs_long.length;i++) {
 				byte[] b=new byte[8];
 				System.arraycopy(bs_bin, i*8, b, 0, 8);
-				int[] ids=new int[16];
+				byte[] ids=new byte[16];
 				for(int j=0;j<8;j++) {
-					ids[j*2]=b[j]>>4&0xF;
-					ids[j*2+1]=b[j]&0xF;
+					ids[j*2]=(byte) (b[j]>>4&0xF);
+					ids[j*2+1]=(byte) (b[j]&0xF);
 				}
 				
 				for(int j=ids.length-1; j>=0 && index<this.blockStates.length; j--) {
