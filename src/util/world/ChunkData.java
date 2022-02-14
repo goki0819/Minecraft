@@ -19,6 +19,9 @@ import util.nbt.NBTTokenizer;
 
 public class ChunkData implements Comparable<ChunkData>{
 	private int offset,sectorIndex,sectorCount,timeStamp,x,z;
+	/**
+	 * 1*16*1 Sections
+	 */
 	private SectionData[] sections;
 	private Node<NBTElement> root;
 	

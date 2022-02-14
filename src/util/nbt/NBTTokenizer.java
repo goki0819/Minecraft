@@ -1,14 +1,9 @@
 package util.nbt;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
 
 import util.Node;
 import util.nbt.value.ListValue;
@@ -24,21 +19,21 @@ public class NBTTokenizer{
 //			throw new IOException("file is not found.");
 //		}
 //	}
-	public NBTTokenizer(File file) throws IOException {
-		if(file.exists()){
-			GZIPInputStream gzipInput = new GZIPInputStream(new FileInputStream(file));
-			ByteArrayOutputStream baos=new ByteArrayOutputStream();
-			int len;
-			byte[] b=new byte[1024 * 4];
-			while ((len = gzipInput.read(b)) != -1) {
-                baos.write(b, 0, len);
-            }
-			gzipInput.close();
-			inputStream = new ByteArrayInputStream(baos.toByteArray());
-		}else{
-			throw new IOException("file is not found.");
-		}
-	}
+//	public NBTTokenizer(File file) throws IOException {
+//		if(file.exists()){
+//			GZIPInputStream gzipInput = new GZIPInputStream(new FileInputStream(file));
+//			ByteArrayOutputStream baos=new ByteArrayOutputStream();
+//			int len;
+//			byte[] b=new byte[1024 * 4];
+//			while ((len = gzipInput.read(b)) != -1) {
+//                baos.write(b, 0, len);
+//            }
+//			gzipInput.close();
+//			inputStream = new ByteArrayInputStream(baos.toByteArray());
+//		}else{
+//			throw new IOException("file is not found.");
+//		}
+//	}
 	public NBTTokenizer(InputStream inputStream) throws IOException {
 		this.inputStream=inputStream;
 	}

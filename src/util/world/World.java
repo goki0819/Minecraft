@@ -39,7 +39,23 @@ public class World {
 		
 		if(region==null)return Block.AIR;
 		
-		System.err.println("chunk["+key+"] loaded.");
 		return region.getBlock(x-rx*512, y, z-rz*512);
+	}
+	public Region getRegion(int x, int z) throws IOException {
+		String key = x+"_"+z;
+		if(regions.containsKey(key)) {
+			Region region=regions.get(key);
+			
+			if(region==null)return null;
+			
+			return regions.get(key);
+		}
+		
+		Region region=Region.loadRegion(regionDir, x, z);
+		regions.put(key, region);
+		
+		if(region==null)return null;
+		
+		return region;
 	}
 }

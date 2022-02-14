@@ -11,6 +11,10 @@ import util.nbt.value.NumberValue;
 public class SectionData {
 	
 	private int y=0;
+	
+	/**
+	 * 16*16*16 Blocks
+	 */
 	private BlockData[] blocks;
 	private byte[] blockStates=new byte[4096];
 	private byte[] blockLight=null, skyLight=null;
