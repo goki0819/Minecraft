@@ -107,7 +107,25 @@ public class NBTElement implements Element{
 	public String getName() {return name;}
 	public NBTValue<?> getValue() {return value;}
 	public String toString() {
-		return "ID:"+id+" ,name:"+name+" ,value:"+value;
+		return "ID:"+getIDName(id)+" ,name:"+name+" ,value:"+value;
+	}
+	public static String getIDName(int id) {
+		switch (id) {
+			case TAG_End : return"End";
+			case TAG_Byte : return "Byte";
+			case TAG_Short : return "Short";
+			case TAG_Int : return "Int";
+			case TAG_Long : return "Long";
+			case TAG_Float : return "Float";
+			case TAG_Double : return "Double";
+			case TAG_Byte_Array : return "Byte Array";
+			case TAG_String : return "String";
+			case TAG_List : return "List";
+			case TAG_Compound : return "Compound";
+			case TAG_Int_Array : return "Int Array";
+			case TAG_Long_Array : return "Long Array";
+			default : return "Unknown ID "+id;
+		}
 	}
 	
 	public static void show(Node<NBTElement> root){show(root, 0);}
